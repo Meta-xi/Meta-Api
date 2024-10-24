@@ -32,7 +32,8 @@ builder.Services.AddSwaggerGen(c =>{
 });
 
 builder.Services.AddDbContext<DBContext>(options => 
-options.UseNpgsql("Server=localhost;Port=5432;Database=Meta_xi;User ID=postgres;Password=1234"));
+options.UseNpgsql("Host=autorack.proxy.rlwy.net;Port=56967;Username=postgres;Password=ZMnnjLFsLhKgshApPZQbgEASgGhUUQOC;Database=railway"
+));
 builder.Services.AddTransient<UserService, UserService>();
 builder.Services.AddScoped<IGeneratedJwt, GeneratedJwt>();
 builder.Services.AddScoped<IRegisteredToReferLevel, RegisteredToReferLevels>();

@@ -118,3 +118,4 @@ E:\Meta-xi\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
 E:\Meta-xi\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 E:\Meta-xi\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
 E:\Meta-xi\bin\Debug\net8.0\PhoneNumbers.dll
+E:\Meta-xi\obj\Debug\net8.0\Meta-xi.sourcelink.json
