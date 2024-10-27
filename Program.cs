@@ -47,6 +47,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("super secret key for new project with the 512 bytes patreon , thanks for user my app"))
     };
 });
+builder.Services.AddCors(option =>{
+    option.AddPolicy("AllowAngularApp", builder=>{
+        builder.WithOrigins("https://meta-xi-client.vercel.app")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
@@ -58,7 +65,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     
     );
 }
-
+app.UseCors("AllowAngularApp");
 app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
