@@ -86,8 +86,9 @@ public class UserController : ControllerBase
         else
         {
             var phoneNumber = await context.Users.FirstOrDefaultAsync(option => option.PhoneNumber == userRegister.PhoneNumber);
-            if(phoneNumber != null){
-                return BadRequest( new { message = "Ese número de telefono ya ha sido usado" });
+            if (phoneNumber != null)
+            {
+                return BadRequest(new { message = "Ese número de telefono ya ha sido usado" });
             }
             PhoneNumberValidator phoneNumberValidator = new PhoneNumberValidator();
             if (userRegister.PhoneNumber != null)
@@ -155,7 +156,7 @@ public class UserController : ControllerBase
             }
             await registeredToReferLevel.VerifyToReferLevel1(userRegister.CodeReferrer, code);
         }
-        return Ok( new { message = "Usuario registrado correctamente"});
+        return Ok(new { message = "Usuario registrado correctamente" });
     }
     //Endpoint para loguear un usuario 
     [HttpPost("Login")]
@@ -227,7 +228,49 @@ public class UserController : ControllerBase
                 link = $"https://meta-xi-client.vercel.app/login?code={code}";
             }
         }
-
         return Ok(link);
+    }
+    //Endpoint para actualizar contraseña
+    [HttpPatch("UpdatePassword")]
+    public async Task<IActionResult> UpdatePassword(UpdatePassword updatePassword)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == updatePassword.Username || option.PhoneNumber == updatePassword.Username);
+        if (user == null)
+        {
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+        if (!userService.verifyPassword(updatePassword.OldPassword, user.Password))
+        {
+            return BadRequest(new { message = "Contraseña anterior incorrecta" });
+        }
+        string pattern2 = @"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\da-zA-Z]).{6,}$";
+        Match match1 = Regex.Match(updatePassword.NewPassword, pattern2);
+        if (!match1.Success)
+        {
+            if (!Regex.IsMatch(updatePassword.NewPassword, "(?=.*[A-Z])"))
+            {
+                return BadRequest(new { message = "La contraseña debe tener al menos una mayúscula" });
+            }
+            else if (!Regex.IsMatch(updatePassword.NewPassword, "(?=.*[a-z])"))
+            {
+                return BadRequest(new { message = "La contraseña debe tener al menos una minúscula" });
+            }
+            else if (!Regex.IsMatch(updatePassword.NewPassword, "(?=.*\\d)"))
+            {
+                return BadRequest(new { message = "La contraseña debe tener al menos un número" });
+            }
+            else if (!Regex.IsMatch(updatePassword.NewPassword, "(?=.*[^\\da-zA-Z])"))
+            {
+                return BadRequest(new { message = "La contraseña debe tener al menos un carácter especial" });
+            }
+            else
+            {
+                return BadRequest(new { message = "La contraseña debe tener al menos 6 caracteres" });
+            }
+        }
+        user.Password = userService.GeneratePassword(updatePassword.NewPassword);
+        context.Entry(user).State = EntityState.Modified;
+        await context.SaveChangesAsync();
+        return Ok(new { message = "Contraseña actualizada correctamente" });
     }
 }
