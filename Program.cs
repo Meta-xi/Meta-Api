@@ -49,7 +49,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 builder.Services.AddCors(option =>{
     option.AddPolicy("AllowAngularApp", builder=>{
-        builder.WithOrigins("https://meta-xi-client.vercel.app")
+        builder.AllowAnyOrigin()
         .AllowAnyHeader()
         .AllowAnyMethod();
     });

@@ -13,4 +13,5 @@ public class User
     public required ICollection<ReferLevel1>? referLevel1s { get ; set ; }
     public required ICollection<ReferLevel2>? referLevel2s { get ; set ; }
     public required ICollection<ReferLevel3>? referLevel3s { get ; set ; }
+    public required Wallet? Wallet { get ; set ; }
 }

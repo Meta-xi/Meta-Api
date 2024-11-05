@@ -77,11 +77,21 @@ public class UserController : ControllerBase
                 Code = code,
                 referLevel1s = null,
                 referLevel2s = null,
-                referLevel3s = null
+                referLevel3s = null,
+                Wallet = null
             };
             await context.Users.AddAsync(userToRegister);
             await context.SaveChangesAsync();
-
+            var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == userRegister.Email);
+            if(wallet != null){
+                return NotFound(new { message = "El usuario ya tiene una cartera" });
+            }
+            Wallet wallet1 = new Wallet{
+                Email = userRegister.Email,
+                Balance = 0,
+            };
+            await context.Wallets.AddAsync(wallet1);
+            await context.SaveChangesAsync();
         }
         else
         {
@@ -135,10 +145,21 @@ public class UserController : ControllerBase
                     Code = code,
                     referLevel1s = null,
                     referLevel2s = null,
-                    referLevel3s = null
+                    referLevel3s = null,
+                    Wallet = null
                 };
                 await context.Users.AddAsync(user);
                 await context.SaveChangesAsync();
+                var wallet = context.Wallets.FirstOrDefaultAsync(option => option.Email == userRegister.Email);
+                if(wallet != null){
+                return NotFound(new { message = "El usuario ya tiene una cartera" });
+            }
+            Wallet wallet1 = new Wallet{
+                Email = userRegister.PhoneNumber,
+                Balance = 0
+            };
+            await context.Wallets.AddAsync(wallet1);
+            await context.SaveChangesAsync();
             }
         }
         if (userRegister.CodeReferrer != null)
