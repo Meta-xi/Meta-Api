@@ -55,6 +55,11 @@ builder.Services.AddCors(option =>{
     });
 });
 var app = builder.Build();
+using ( var scope = app.Services.CreateScope()){
+    var context = scope.ServiceProvider.GetRequiredService<DBContext>();
+    context.Database.Migrate();
+};
+
 
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
