@@ -15,30 +15,30 @@ public class UpdatePlans : IUpdatePlansPerHour
     {
         var userplans = await context.UserPlans.ToListAsync();
         List<UserBenefitDaily> userBenefitDailies = new List<UserBenefitDaily>();
-        
+
         foreach (var i in userplans)
         {
             var plan = await context.Plans.FirstOrDefaultAsync(option => option.Name == i.NamePlan);
-            
-                UserBenefitDaily? userBenefitDaily = userBenefitDailies.FirstOrDefault(option => option.Username == i.Username);
-                if (userBenefitDaily != null && plan != null)
+
+            UserBenefitDaily? userBenefitDaily = userBenefitDailies.FirstOrDefault(option => option.Username == i.Username);
+            if (userBenefitDaily != null && plan != null)
+            {
+                userBenefitDaily.AcumulatedBenefitperDay += (float)Math.Round(plan.DailyBenefit, 2);
+                Console.WriteLine($"AcumulatedBenefitperDay actualizado para {i.Username}: {userBenefitDaily.AcumulatedBenefitperDay}");
+            }
+            else if (plan != null)
+            {
+                UserBenefitDaily userBenefit = new UserBenefitDaily
                 {
-                    userBenefitDaily.AcumulatedBenefitperDay += (float)Math.Round(plan.DailyBenefit, 2);
-                    Console.WriteLine($"AcumulatedBenefitperDay actualizado para {i.Username}: {userBenefitDaily.AcumulatedBenefitperDay}");
-                }
-                else if (plan != null)
-                {
-                    UserBenefitDaily userBenefit = new UserBenefitDaily
-                    {
-                        Username = i.Username,
-                        AcumulatedBenefitperDay = (float)Math.Round(plan.DailyBenefit, 2)
-                    };
-                    userBenefitDailies.Add(userBenefit);
-                    Console.WriteLine($"Nuevo UserBenefitDaily agregado para {i.Username}");
-                }
-            
+                    Username = i.Username,
+                    AcumulatedBenefitperDay = (float)Math.Round(plan.DailyBenefit, 2)
+                };
+                userBenefitDailies.Add(userBenefit);
+                Console.WriteLine($"Nuevo UserBenefitDaily agregado para {i.Username}");
+            }
+
         }
-        
+
         foreach (var i in userplans)
         {
             Console.WriteLine($"Entrando a la actualización del usuario {i.Username}");
@@ -56,8 +56,8 @@ public class UpdatePlans : IUpdatePlansPerHour
                         UpdatePlansForUser updatePlansForUser = new UpdatePlansForUser
                         {
                             Username = i.Username,
-                            AcumulatedBenefitperHour = benefitPerHour,
-                            AcumulatedTotalBenefit = benefitPerHour
+                            AcumulatedBenefitperHour = Math.Round(benefitPerHour, 2),
+                            AcumulatedTotalBenefit = Math.Round(benefitPerHour, 2)
                         };
                         await context.UpdatePlansForUser.AddAsync(updatePlansForUser);
                         await context.SaveChangesAsync();
@@ -90,8 +90,8 @@ public class UpdatePlans : IUpdatePlansPerHour
                             if (userPlan.AcumulatedBenefitperHour < userBenefitDaily.AcumulatedBenefitperDay)
                             {
                                 double benefitPerHour = Math.Round(plan.DailyBenefit / 24, 2);
-                                userPlan.AcumulatedBenefitperHour += Math.Round(benefitPerHour, 2);
-                                userPlan.AcumulatedTotalBenefit += Math.Round(benefitPerHour, 2);
+                                userPlan.AcumulatedBenefitperHour += Math.Round(benefitPerHour, 2, MidpointRounding.AwayFromZero);
+                                userPlan.AcumulatedTotalBenefit += Math.Round(benefitPerHour, 2, MidpointRounding.AwayFromZero);
                                 context.Entry(userPlan).State = EntityState.Modified;
                                 await context.SaveChangesAsync();
                                 Console.WriteLine($"AcumulatedBenefitperHour y AcumulatedTotalBenefit actualizados para {i.Username}");
@@ -114,12 +114,11 @@ public class UpdatePlans : IUpdatePlansPerHour
                             {
                                 Console.WriteLine("userBenefitDaily es igual a null");
                                 double benefitPerHour = Math.Round(plan.DailyBenefit / 24, 2);
-                                userPlan.AcumulatedBenefitperHour = Math.Round(benefitPerHour, 2);
-                                userPlan.AcumulatedTotalBenefit += Math.Round(benefitPerHour, 2);
+                                userPlan.AcumulatedBenefitperHour += Math.Round(benefitPerHour, 2, MidpointRounding.AwayFromZero);
+                                userPlan.AcumulatedTotalBenefit += Math.Round(benefitPerHour, 2, MidpointRounding.AwayFromZero);
                                 context.Entry(userPlan).State = EntityState.Modified;
                                 await context.SaveChangesAsync();
                                 Console.WriteLine($"AcumulatedBenefitperHour restablecido y AcumulatedTotalBenefit actualizado para {i.Username}");
-
                                 i.Percentage += float.Parse(Math.Round(benefitPerHour / plan.TotalBenefit * 100, 2).ToString());
                                 context.Entry(i).State = EntityState.Modified;
                                 await context.SaveChangesAsync();
