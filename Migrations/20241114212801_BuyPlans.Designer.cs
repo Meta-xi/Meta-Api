@@ -3,6 +3,7 @@ using System;
 using Meta_xi.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Meta_xi.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContexModelSnapshot : ModelSnapshot
+    [Migration("20241114212801_BuyPlans")]
+    partial class BuyPlans
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,29 +133,6 @@ namespace Meta_xi.Migrations
                     b.HasIndex("IDUserReferrer");
 
                     b.ToTable("ReferLevel3s");
-                });
-
-            modelBuilder.Entity("Meta_xi.Application.UpdatePlansForUser", b =>
-                {
-                    b.Property<int>("IDUpdatePlansForUser")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IDUpdatePlansForUser"));
-
-                    b.Property<double>("AcumulatedBenefitperHour")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("AcumulatedTotalBenefit")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("IDUpdatePlansForUser");
-
-                    b.ToTable("UpdatePlansForUser");
                 });
 
             modelBuilder.Entity("Meta_xi.Application.User", b =>

@@ -3,6 +3,7 @@ using System;
 using Meta_xi.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Meta_xi.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContexModelSnapshot : ModelSnapshot
+    [Migration("20241113225435_AddUserPlans")]
+    partial class AddUserPlans
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +43,6 @@ namespace Meta_xi.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<double>("Price")
@@ -66,11 +68,9 @@ namespace Meta_xi.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("UniqueCodeReFerred")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("UniqueCodeReferrer")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("IDReferLevel1");
@@ -92,11 +92,9 @@ namespace Meta_xi.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("UniqueCodeReFerred")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("UniqueCodeReferrer")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("IDReferLevel1");
@@ -118,11 +116,9 @@ namespace Meta_xi.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("UniqueCodeReFerred")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("UniqueCodeReferrer")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("IDReferLevel1");
@@ -130,29 +126,6 @@ namespace Meta_xi.Migrations
                     b.HasIndex("IDUserReferrer");
 
                     b.ToTable("ReferLevel3s");
-                });
-
-            modelBuilder.Entity("Meta_xi.Application.UpdatePlansForUser", b =>
-                {
-                    b.Property<int>("IDUpdatePlansForUser")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IDUpdatePlansForUser"));
-
-                    b.Property<double>("AcumulatedBenefitperHour")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("AcumulatedTotalBenefit")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("IDUpdatePlansForUser");
-
-                    b.ToTable("UpdatePlansForUser");
                 });
 
             modelBuilder.Entity("Meta_xi.Application.User", b =>
@@ -170,14 +143,12 @@ namespace Meta_xi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
 
                     b.Property<string>("Token")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("WalletIdWallet")
@@ -198,18 +169,10 @@ namespace Meta_xi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IDBuyPlan"));
 
-                    b.Property<DateTime>("DatePlan")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("NamePlan")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<float>("Percentage")
-                        .HasColumnType("real");
-
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("IDBuyPlan");
@@ -229,7 +192,6 @@ namespace Meta_xi.Migrations
                         .HasColumnType("real");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("IdWallet");

@@ -27,13 +27,25 @@ public class PlansController : ControllerBase{
         return Ok("Plan registrado correctamente");
     }
     //Endpoint para obtener todos los planes disponibles en la aplicación
-    [HttpGet("Plans")]
-    public async Task<IActionResult> Plans(){
-        var plan = await context.Plans.ToListAsync();
-        if(!plan.Any()){
-            return NotFound("No hay planes registrados");
+    [HttpGet("Plans/{username}")]
+    public async Task<IActionResult> Plans(string username){
+        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == username || option.PhoneNumber == username);
+        if(user == null){
+            return NotFound("El usuario no existe en la aplicacion");
         }
-        return Ok(plan);
+        var userPlans = await context.UserPlans.Where(option => option.Username == username).ToListAsync();
+        if(!userPlans.Any()){
+            var plans = await context.Plans.ToListAsync();
+            return Ok(plans);
+        }
+        var oldplans = await context.Plans.ToListAsync();
+        foreach(var i in userPlans){
+            foreach(var j in oldplans){
+                if(i.NamePlan == j.Name){
+                    j.MaxQuantity = j.MaxQuantity - 1;
+                }
+            }
+        }
+        return Ok(oldplans);
     }
-
 }

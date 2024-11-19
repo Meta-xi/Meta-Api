@@ -37,6 +37,8 @@ options.UseNpgsql("Host=autorack.proxy.rlwy.net;Port=56967;Username=postgres;Pas
 builder.Services.AddTransient<UserService, UserService>();
 builder.Services.AddScoped<IGeneratedJwt, GeneratedJwt>();
 builder.Services.AddScoped<IRegisteredToReferLevel, RegisteredToReferLevels>();
+builder.Services.AddScoped<IUpdatePlansPerHour, UpdatePlans>();
+builder.Services.AddHostedService<UpdateServicePerHour>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -55,11 +57,12 @@ builder.Services.AddCors(option =>{
     });
 });
 var app = builder.Build();
-using ( var scope = app.Services.CreateScope()){
-    var context = scope.ServiceProvider.GetRequiredService<DBContext>();
-    context.Database.Migrate();
-};
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DBContext>();
+    dbContext.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
