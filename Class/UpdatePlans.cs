@@ -23,7 +23,7 @@ public class UpdatePlans : IUpdatePlansPerHour
             UserBenefitDaily? userBenefitDaily = userBenefitDailies.FirstOrDefault(option => option.Username == i.Username);
             if (userBenefitDaily != null && plan != null)
             {
-                userBenefitDaily.AcumulatedBenefitperDay += (float)Math.Round(plan.DailyBenefit, 2);
+                userBenefitDaily.AcumulatedBenefitperDay = (float)Math.Round(userBenefitDaily.AcumulatedBenefitperDay + Math.Round(plan.DailyBenefit, 2), 2);
                 Console.WriteLine($"AcumulatedBenefitperDay actualizado para {i.Username}: {userBenefitDaily.AcumulatedBenefitperDay}");
             }
             else if (plan != null)
@@ -62,12 +62,10 @@ public class UpdatePlans : IUpdatePlansPerHour
                         await context.UpdatePlansForUser.AddAsync(updatePlansForUser);
                         await context.SaveChangesAsync();
                         Console.WriteLine($"Nuevo UpdatePlansForUser creado para {i.Username} con beneficio por hora: {benefitPerHour}");
-
-                        i.Percentage += float.Parse(Math.Round(benefitPerHour / plan.TotalBenefit * 100, 2).ToString());
+                        i.Percentage = Math.Round(i.Percentage + benefitPerHour / plan.TotalBenefit * 100, 2);
                         context.Entry(i).State = EntityState.Modified;
                         await context.SaveChangesAsync();
                         Console.WriteLine($"Porcentaje actualizado para {i.Username}: {i.Percentage}");
-
                         var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == i.Username);
                         if (wallet != null)
                         {
@@ -90,17 +88,15 @@ public class UpdatePlans : IUpdatePlansPerHour
                             if (userPlan.AcumulatedBenefitperHour < userBenefitDaily.AcumulatedBenefitperDay)
                             {
                                 double benefitPerHour = Math.Round(plan.DailyBenefit / 24, 2);
-                                userPlan.AcumulatedBenefitperHour += Math.Round(benefitPerHour, 2, MidpointRounding.AwayFromZero);
-                                userPlan.AcumulatedTotalBenefit += Math.Round(benefitPerHour, 2, MidpointRounding.AwayFromZero);
+                                userPlan.AcumulatedBenefitperHour = Math.Round(userPlan.AcumulatedBenefitperHour + benefitPerHour, 2);
+                                userPlan.AcumulatedTotalBenefit = Math.Round(userPlan.AcumulatedTotalBenefit + benefitPerHour, 2);
                                 context.Entry(userPlan).State = EntityState.Modified;
                                 await context.SaveChangesAsync();
                                 Console.WriteLine($"AcumulatedBenefitperHour y AcumulatedTotalBenefit actualizados para {i.Username}");
-
-                                i.Percentage += float.Parse(Math.Round(benefitPerHour / plan.TotalBenefit * 100, 2).ToString());
+                                i.Percentage = Math.Round(i.Percentage + benefitPerHour / plan.TotalBenefit * 100, 2);
                                 context.Entry(i).State = EntityState.Modified;
                                 await context.SaveChangesAsync();
                                 Console.WriteLine($"Porcentaje actualizado para {i.Username}: {i.Percentage}");
-
                                 var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == i.Username);
                                 if (wallet != null)
                                 {
@@ -114,12 +110,12 @@ public class UpdatePlans : IUpdatePlansPerHour
                             {
                                 Console.WriteLine("userBenefitDaily es igual a null");
                                 double benefitPerHour = Math.Round(plan.DailyBenefit / 24, 2);
-                                userPlan.AcumulatedBenefitperHour += Math.Round(benefitPerHour, 2, MidpointRounding.AwayFromZero);
-                                userPlan.AcumulatedTotalBenefit += Math.Round(benefitPerHour, 2, MidpointRounding.AwayFromZero);
+                                userPlan.AcumulatedBenefitperHour = Math.Round(userPlan.AcumulatedBenefitperHour + benefitPerHour, 2);
+                                userPlan.AcumulatedTotalBenefit = Math.Round(userPlan.AcumulatedTotalBenefit + benefitPerHour, 2);
                                 context.Entry(userPlan).State = EntityState.Modified;
                                 await context.SaveChangesAsync();
                                 Console.WriteLine($"AcumulatedBenefitperHour restablecido y AcumulatedTotalBenefit actualizado para {i.Username}");
-                                i.Percentage += float.Parse(Math.Round(benefitPerHour / plan.TotalBenefit * 100, 2).ToString());
+                                i.Percentage += Math.Round(benefitPerHour / plan.TotalBenefit * 100, 2);
                                 context.Entry(i).State = EntityState.Modified;
                                 await context.SaveChangesAsync();
                                 Console.WriteLine($"Porcentaje actualizado para {i.Username}: {i.Percentage}");

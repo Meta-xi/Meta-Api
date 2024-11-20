@@ -8,5 +8,5 @@ public class UserPlans
     public required string Username { get; set; }
     public required string NamePlan { get; set; }
     public required DateTime DatePlan { get; set; }
-    public required float Percentage { get; set; }
+    public required double Percentage { get; set; }
 }
