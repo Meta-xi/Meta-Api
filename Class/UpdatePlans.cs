@@ -62,10 +62,6 @@ public class UpdatePlans : IUpdatePlansPerHour
                 {
                     await AddNewPlan(userPlan, plan, benefitPerHour);
                 }
-                else
-                {
-                    await UpdateExistingPlan(userPlan, plan, benefitPerHour, userBenefitDailies, existingUpdatePlan);
-                }
             }
             else
             {
