@@ -54,7 +54,6 @@ public class UserPlansController : ControllerBase
             context.Entry(wallet).State = EntityState.Modified;
             await context.SaveChangesAsync();
         }
-
         else
         {
             return NotFound(new { message = "No tiene saldo suficiente" });

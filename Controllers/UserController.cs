@@ -192,39 +192,15 @@ public async Task<IActionResult> UserRegister(UserRegister userRegister)
         await context.SaveChangesAsync();
         return Ok(username.Token);
     }
-    [HttpPost("GetLink")]
-    public async Task<IActionResult> GetLink(GetReferLink getReferLink)
-    {
-        string code = string.Empty;
-        string link = string.Empty;
-        Console.WriteLine(getReferLink.Email.IsNullOrEmpty());
-        if (getReferLink.Email.IsNullOrEmpty())
-        {
-            var user = await context.Users.FirstOrDefaultAsync(option => option.PhoneNumber == getReferLink.PhoneNumber);
-            if (user == null)
-            {
-                return NotFound("Usuario no encontrado");
-            }
-            if (user.Code != null)
-            {
-                code = user.Code;
-                link = $"https://meta-xi-client.vercel.app/login?code={code}";
-            }
+    //Obtener el link para el código de referido
+    [HttpGet("GetLink/{username}")]
+    public async Task<IActionResult> GetLink(string username){
+        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == username || option.PhoneNumber == username);
+        if(user == null){
+            return NotFound(new { message = "Usuario no encontrado" });
         }
-        else
-        {
-            var user = await context.Users.FirstOrDefaultAsync(option => option.Email == getReferLink.Email);
-            if (user == null)
-            {
-                return NotFound("Usuario no encontrado");
-            }
-            if (user.Code != null)
-            {
-                code = user.Code;
-                link = $"https://meta-xi-client.vercel.app/login?code={code}";
-            }
-        }
-        return Ok(link);
+        string link = $"http://localhost:4200/login?code={user.Code}";
+        return Ok(new {link});
     }
     //Endpoint para actualizar contraseña
     [HttpPatch("UpdatePassword")]
