@@ -62,6 +62,9 @@ public class UpdatePlans : IUpdatePlansPerHour
                 {
                     await AddNewPlan(userPlan, plan, benefitPerHour);
                 }
+                else{
+                    await UpdateExistingPlan(userPlan, plan, existingUpdatePlan);
+                }
             }
             else
             {
@@ -110,15 +113,7 @@ public class UpdatePlans : IUpdatePlansPerHour
 
             Console.WriteLine($"AcumulatedBenefitperHour : {existingUpdatePlan.AcumulatedBenefitperHour} y AcumulatedTotalBenefit : {existingUpdatePlan.AcumulatedTotalBenefit} actualizados para {userPlan.Username}");
         }
-        else
-        {
-            existingUpdatePlan.AcumulatedBenefitperHour = 
-                Math.Round(existingUpdatePlan.AcumulatedBenefitperHour + benefitPerHour, 2);
-            existingUpdatePlan.AcumulatedTotalBenefit = 
-                Math.Round(existingUpdatePlan.AcumulatedTotalBenefit + benefitPerHour, 2);
-
-            Console.WriteLine($"AcumulatedBenefitperHour restablecido para {userPlan.Username}: {existingUpdatePlan.AcumulatedBenefitperHour}");
-        }
+        
 
         context.Entry(existingUpdatePlan).State = EntityState.Modified;
         await context.SaveChangesAsync();
