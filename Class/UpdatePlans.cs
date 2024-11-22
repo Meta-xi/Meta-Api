@@ -73,7 +73,7 @@ public class UpdatePlans : IUpdatePlansPerHour
                 Console.WriteLine($"Plan de usuario {userPlan.Username} eliminado porque alcanzó el 100% del beneficio.");
             }
         }
-
+    Console.WriteLine("Me cago en tu madre.");
         userBenefitDailies.Clear();
         Console.WriteLine("Lista de beneficios diarios limpia.");
     }
