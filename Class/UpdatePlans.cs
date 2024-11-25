@@ -73,7 +73,6 @@ public class UpdatePlans : IUpdatePlansPerHour
                 Console.WriteLine($"Plan de usuario {userPlan.Username} eliminado porque alcanzó el 100% del beneficio.");
             }
         }
-    Console.WriteLine("Me cago en tu madre.");
         userBenefitDailies.Clear();
         Console.WriteLine("Lista de beneficios diarios limpia.");
     }
@@ -116,14 +115,12 @@ public class UpdatePlans : IUpdatePlansPerHour
         else
         {
             existingUpdatePlan.AcumulatedBenefitperHour = 
-                Math.Round(existingUpdatePlan.AcumulatedBenefitperHour + benefitPerHour, 2);
+                Math.Round(benefitPerHour, 2);
             existingUpdatePlan.AcumulatedTotalBenefit = 
                 Math.Round(existingUpdatePlan.AcumulatedTotalBenefit + benefitPerHour, 2);
 
             Console.WriteLine($"AcumulatedBenefitperHour restablecido para {userPlan.Username}: {existingUpdatePlan.AcumulatedBenefitperHour}");
         }
-        
-
         context.Entry(existingUpdatePlan).State = EntityState.Modified;
         await context.SaveChangesAsync();
 
