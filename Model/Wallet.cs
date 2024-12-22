@@ -8,6 +8,4 @@ public class Wallet
     public int IdWallet { get; set; }
     public required string Email { get ; set ; }
     public required float Balance { get ; set ; }
-
-
 }

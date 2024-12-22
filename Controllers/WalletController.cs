@@ -13,17 +13,32 @@ public class WalletController : ControllerBase
         context = _context;
     }
     [HttpPost("UpdateBalance")]
-    public async Task<IActionResult> UpdateBalance(UpdateBalance updateBalance){
+    public async Task<IActionResult> UpdateBalance(UpdateBalance updateBalance)
+    {
         GetMoneyValues getMoneyValues = new GetMoneyValues();
+        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == updateBalance.Email);
+        if(user == null){
+            return NotFound(new { message = "No existe ninguna cuenta con ese correo" });
+        }
         var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == updateBalance.Email);
-        if(wallet == null){
+        if (wallet == null)
+        {
             return NotFound(new { message = "No existe ninguna cartera con ese correo" });
         }
         string token = updateBalance.Token.ToLower();
-        switch (token){
+        switch (token)
+        {
             case "nequi":
                 wallet.Balance = updateBalance.Balance;
                 context.Entry(wallet).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+                RechargeLog rechargeLog = new RechargeLog{
+                    IdUser = user.Id,
+                    Recharge =updateBalance.Balance,
+                    Date = DateTime.UtcNow,
+                    User = null
+                };
+                await context.RechargeLogs.AddAsync(rechargeLog);
                 await context.SaveChangesAsync();
                 return Ok(new { message = "Balance actualizada correctamente" });
             case "trx":
@@ -36,33 +51,121 @@ public class WalletController : ControllerBase
                 wallet.Balance = wallet.Balance + (value * updateBalance.Balance * usd);
                 context.Entry(wallet).State = EntityState.Modified;
                 await context.SaveChangesAsync();
-                return Ok(new { message = "Balance actualizado correctamente" });    
-                case "usdt_trc20":
-                    decimal balance2 = await getMoneyValues.GetMoneyValueAsync("tether");
-                    float value2 = (float)balance2;
-                    decimal usdToCop2 = await getMoneyValues.GetMoneyValueAsync("cop");
-                    float usd2 = (float)usdToCop2;
-                    wallet.Balance = wallet.Balance + (value2 * updateBalance.Balance * usd2);
-                    context.Entry(wallet).State = EntityState.Modified;
-                    await context.SaveChangesAsync();
-                    return Ok(new { message = "Balance actualizado correctamente" });
-                case "paypal":
-                    decimal balance3 = await getMoneyValues.GetMoneyValueAsync("cop");
-                    float value3 = (float)balance3;
-                    wallet.Balance = wallet.Balance + (value3 * updateBalance.Balance);
-                    context.Entry(wallet).State = EntityState.Modified;
-                    await context.SaveChangesAsync();
-                    return Ok(new { message = "Balance actualizado correctamente" });
-                    default:
-                        return NotFound(new { message = "Token no soportado" });
-        } 
+                RechargeLog rechargeLogtrx = new RechargeLog{
+                    IdUser = user.Id,
+                    Recharge =updateBalance.Balance * value * usd,
+                    Date = DateTime.UtcNow,
+                    User = null
+                };
+                await context.RechargeLogs.AddAsync(rechargeLogtrx);
+                await context.SaveChangesAsync();
+                return Ok(new { message = "Balance actualizado correctamente" });
+            case "usdt_trc20":
+                decimal balance2 = await getMoneyValues.GetMoneyValueAsync("tether");
+                float value2 = (float)balance2;
+                decimal usdToCop2 = await getMoneyValues.GetMoneyValueAsync("cop");
+                float usd2 = (float)usdToCop2;
+                wallet.Balance = wallet.Balance + (value2 * updateBalance.Balance * usd2);
+                context.Entry(wallet).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+                RechargeLog rechargeLogusdt_trc20 = new RechargeLog{
+                    IdUser = user.Id,
+                    Recharge =updateBalance.Balance,
+                    Date = DateTime.UtcNow,
+                    User = null
+                };
+                await context.RechargeLogs.AddAsync(rechargeLogusdt_trc20);
+                await context.SaveChangesAsync();
+                return Ok(new { message = "Balance actualizado correctamente" });
+            case "paypal":
+                decimal balance3 = await getMoneyValues.GetMoneyValueAsync("cop");
+                float value3 = (float)balance3;
+                wallet.Balance = wallet.Balance + (value3 * updateBalance.Balance);
+                context.Entry(wallet).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+                RechargeLog rechargeLogpaypal = new RechargeLog{
+                    IdUser = user.Id,
+                    Recharge =updateBalance.Balance,
+                    Date = DateTime.UtcNow,
+                    User = null
+                };
+                await context.RechargeLogs.AddAsync(rechargeLogpaypal);
+                await context.SaveChangesAsync();
+                return Ok(new { message = "Balance actualizado correctamente" });
+            default:
+                return NotFound(new { message = "Token no soportado" });
+        }
     }
     [HttpGet("GetBalance/{username}")]
-    public async Task<IActionResult> GetBalance(string username){
+    public async Task<IActionResult> GetBalance(string username)
+    {
         var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == username);
-        if(wallet == null){
-            return NotFound(new { message = "El usuario no posee ninguna cartera"});
+        if (wallet == null)
+        {
+            return NotFound(new { message = "El usuario no posee ninguna cartera" });
         }
         return Ok(wallet.Balance);
+    }
+    [HttpPatch("WithdrawBalance")]
+    public async Task<IActionResult> WithdrawalBalance(WitdrawBalance witdrawBalance){
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == witdrawBalance.Username || u.PhoneNumber == witdrawBalance.Username);
+        if(user == null){
+            return NotFound(new { message = "No existe ninguna cuenta con ese correo" });
+        }
+        var wallet = await context.Wallets.FirstOrDefaultAsync(u => u.Email == witdrawBalance.Username);
+        if(wallet == null){
+            return NotFound(new { message = "El usuario no posee ninguna cartera" });
+        }
+        if(wallet.Balance < witdrawBalance.Withdraw){
+            return NotFound(new { message = "No hay suficiente saldo" });
+        }
+        wallet.Balance -= witdrawBalance.Withdraw;
+        context.Entry(wallet).State = EntityState.Modified;
+        await context.SaveChangesAsync();
+        WithdrawLog withdrawLog = new WithdrawLog{
+            Date = DateTime.UtcNow,
+            User = null,
+            Withdraw = witdrawBalance.Withdraw,
+            UserId = user.Id
+        };
+        await context.WithdrawLogs.AddAsync(withdrawLog);
+        await context.SaveChangesAsync();
+        return Ok(new { message = "Balance actualizado correctamente" });
+    }
+    [HttpGet("GetBalanceUsdAndCop/{username}")]
+    public async Task<IActionResult> GetBalanceUsdAndCop(string username){
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == username || u.PhoneNumber == username);
+        if(user == null){
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+        var wallet = await context.Wallets.FirstOrDefaultAsync(w => w.Email ==username);
+        if(wallet == null){
+            return NotFound(new { message = "Billetera no encontrada" });
+        }
+        GetMoneyValues getMoneyValues = new GetMoneyValues();
+        float balanceToUsd = 0;
+        decimal currenttlyBalance = await getMoneyValues.GetMoneyValueAsync("cop");
+        if(wallet.Balance > 0){
+            balanceToUsd = wallet.Balance / (float)currenttlyBalance;
+        }
+        GetUsdAndCop getUsdAndCop = new GetUsdAndCop{
+            BalanceInCop = (float)Math.Round(wallet.Balance , 2),
+            BalanceInUsd = (float)Math.Round(balanceToUsd , 2)
+        };
+        return Ok(getUsdAndCop);
+    }
+    [HttpGet("GetRechargeAndWithdraw/{username}")]
+    public async Task<IActionResult> GetRechargeAndWithdraw(string username){
+        var user = await context.Users.FirstOrDefaultAsync( u => u.Email == username || u.PhoneNumber == username);
+        if(user == null){
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+        var recharge = await context.RechargeLogs.Where(u => u.IdUser == user.Id).SumAsync(u => u.Recharge);
+        var withdraw = await context.WithdrawLogs.Where(u => u.UserId == user.Id).SumAsync(u => u.Withdraw);
+        GetRechargeAndWithdraw getParameters = new GetRechargeAndWithdraw{
+            Recharge = recharge,
+            Withdraw = withdraw
+        };
+        return Ok(getParameters);
     }
 }

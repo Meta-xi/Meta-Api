@@ -9,9 +9,13 @@ public class User
     public required string? PhoneNumber { get; set; }
     public required string Password { get; set; }
     public required string Token { get ; set ;}
-    public required string? Code { get; set; }
+    public required string Code { get; set; }
+    public required DateTime Date { get; set; }
     public required ICollection<ReferLevel1>? referLevel1s { get ; set ; }
     public required ICollection<ReferLevel2>? referLevel2s { get ; set ; }
     public required ICollection<ReferLevel3>? referLevel3s { get ; set ; }
+    public required ICollection<RechargeLog>? rechargeLogs { get ; set ; }
+    public required ICollection<WithdrawLog>? withdrawLogs { get ; set ; }
     public required Wallet? Wallet { get ; set ; }
+    public required ICollection<MissionsUser> missionsUSers { get ; set; }
 }

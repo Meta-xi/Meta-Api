@@ -7,14 +7,16 @@ namespace Meta_xi.Application;
 public class UserPlansController : ControllerBase
 {
     private readonly DBContext context;
-    public UserPlansController(DBContext dBContext)
+    private readonly IBenefitPerRefer benefitPerRefer;
+    public UserPlansController(DBContext dBContext , IBenefitPerRefer _benefitPerRefer)
     {
         context = dBContext;
+        benefitPerRefer = _benefitPerRefer;
     }
     [HttpPost("UserBuyPlans")]
     public async Task<IActionResult> UserBuyPlans(BuyPlans buyPlans)
     {
-        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == buyPlans.Username);
+        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == buyPlans.Username || option.PhoneNumber == buyPlans.Username);
         if (user == null)
         {
             return NotFound(new { message = "Usuario no encontrado" });
@@ -49,10 +51,33 @@ public class UserPlansController : ControllerBase
             await context.UserPlans.AddAsync(userPlans1);
             await context.SaveChangesAsync();
             float balance = (float)plan.Price;
-            wallet.Balance = wallet.Balance - balance;
+            wallet.Balance -= balance;
             Console.WriteLine(wallet.Balance);
             context.Entry(wallet).State = EntityState.Modified;
             await context.SaveChangesAsync();
+            BenefitOperation benefitOperation = new BenefitOperation{
+                PricePlan = plan.Price,
+                Username = buyPlans.Username
+            };
+            bool result3 = await benefitPerRefer.RegisterBenefitLevel3(benefitOperation);
+            if(!result3){
+                Console.WriteLine("No se actualizo para level3");
+            }else{
+                Console.WriteLine("Se actualizo para level3");
+            }
+            bool result2 = await benefitPerRefer.RegisterBenefitLevel2(benefitOperation);
+            if(!result2){
+                Console.WriteLine("No se actualizo para level2");
+            }else{
+                Console.WriteLine("Se actualizo para level2");
+            }
+            bool result = await benefitPerRefer.RegisterBenefitLevel1(benefitOperation);
+            if(!result){
+                Console.WriteLine("No se actualizo para level1");
+            }else{
+                Console.WriteLine("Se actualizo para level3");
+            }
+            
         }
         else
         {

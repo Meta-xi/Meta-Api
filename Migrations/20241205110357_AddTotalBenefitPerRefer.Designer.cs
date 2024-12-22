@@ -3,6 +3,7 @@ using System;
 using Meta_xi.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Meta_xi.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContexModelSnapshot : ModelSnapshot
+    [Migration("20241205110357_AddTotalBenefitPerRefer")]
+    partial class AddTotalBenefitPerRefer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -291,30 +294,6 @@ namespace Meta_xi.Migrations
                     b.ToTable("Wallets");
                 });
 
-            modelBuilder.Entity("Meta_xi.Application.WithdrawLog", b =>
-                {
-                    b.Property<int>("IdWithdraw")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdWithdraw"));
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.Property<float>("Withdraw")
-                        .HasColumnType("real");
-
-                    b.HasKey("IdWithdraw");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("WithdrawLogs");
-                });
-
             modelBuilder.Entity("Meta_xi.Application.RechargeLog", b =>
                 {
                     b.HasOne("Meta_xi.Application.User", "User")
@@ -368,17 +347,6 @@ namespace Meta_xi.Migrations
                     b.Navigation("Wallet");
                 });
 
-            modelBuilder.Entity("Meta_xi.Application.WithdrawLog", b =>
-                {
-                    b.HasOne("Meta_xi.Application.User", "User")
-                        .WithMany("withdrawLogs")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Meta_xi.Application.User", b =>
                 {
                     b.Navigation("rechargeLogs");
@@ -388,8 +356,6 @@ namespace Meta_xi.Migrations
                     b.Navigation("referLevel2s");
 
                     b.Navigation("referLevel3s");
-
-                    b.Navigation("withdrawLogs");
                 });
 #pragma warning restore 612, 618
         }

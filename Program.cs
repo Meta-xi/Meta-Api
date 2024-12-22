@@ -32,13 +32,14 @@ builder.Services.AddSwaggerGen(c =>{
 });
 
 builder.Services.AddDbContext<DBContext>(options => 
-options.UseNpgsql("Host=autorack.proxy.rlwy.net;Port=56967;Username=postgres;Password=ZMnnjLFsLhKgshApPZQbgEASgGhUUQOC;Database=railway"
+options.UseNpgsql("Server=junction.proxy.rlwy.net;Port=32484;Database=railway;User ID=postgres;Password=LOarzKYuIybqJxcMGPVshBJHBjOLowpd;"
 ));
 builder.Services.AddTransient<UserService, UserService>();
 builder.Services.AddScoped<IGeneratedJwt, GeneratedJwt>();
 builder.Services.AddScoped<IRegisteredToReferLevel, RegisteredToReferLevels>();
 builder.Services.AddScoped<IUpdatePlansPerHour, UpdatePlans>();
 builder.Services.AddHostedService<UpdateServicePerHour>();
+builder.Services.AddScoped<IBenefitPerRefer, BenefitRegister>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
