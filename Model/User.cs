@@ -17,5 +17,5 @@ public class User
     public required ICollection<RechargeLog>? rechargeLogs { get ; set ; }
     public required ICollection<WithdrawLog>? withdrawLogs { get ; set ; }
     public required Wallet? Wallet { get ; set ; }
-    public required ICollection<MissionsUser> missionsUSers { get ; set; }
+    public required ICollection<MissionsUser>? missionsUSers { get ; set; }
 }

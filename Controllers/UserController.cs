@@ -64,7 +64,8 @@ public class UserController : ControllerBase
                 referLevel3s = null,
                 Wallet = null,
                 rechargeLogs = null,
-                withdrawLogs = null
+                withdrawLogs = null,
+                missionsUSers = null
             };
             await context.Users.AddAsync(userToRegister);
             await context.SaveChangesAsync();
@@ -121,7 +122,8 @@ public class UserController : ControllerBase
                     referLevel3s = null,
                     Wallet = null,
                     rechargeLogs = null,
-                    withdrawLogs = null
+                    withdrawLogs = null,
+                    missionsUSers = null
                 };
                 await context.Users.AddAsync(user);
                 await context.SaveChangesAsync();
