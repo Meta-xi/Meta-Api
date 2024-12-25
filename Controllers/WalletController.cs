@@ -183,4 +183,28 @@ public class WalletController : ControllerBase
         }
         return Ok();
     }
+    [HttpPost("ClaimWelcomeBonus")]
+    public async Task<IActionResult> ClaimWelcomeBonus( UpdateBalance updateBalance){
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == updateBalance.Email || u.PhoneNumber == updateBalance.Email);
+        if(user == null){
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+        var bonus = await context.WelcomeBonuss.FirstOrDefaultAsync(u => u.UserID == user.Id);
+        if(bonus == null){
+            return NotFound(new { message = "Bonus no encontrado" });
+        }
+        if(bonus.IsClaimed){
+            return NotFound(new { message = "Bonus ya ha sido reclamado" });
+        }
+        var wallet = await context.Wallets.FirstOrDefaultAsync(u => u.Email == updateBalance.Email);
+        if(wallet == null){
+            return NotFound(new { message = "Billetera no encontrada" });
+        }
+        wallet.Balance += updateBalance.Balance;
+        bonus.IsClaimed = true;
+        context.Entry(bonus).State = EntityState.Modified;
+        context.Entry(wallet).State = EntityState.Modified;
+        await context.SaveChangesAsync();
+        return Ok();
+    }
 }

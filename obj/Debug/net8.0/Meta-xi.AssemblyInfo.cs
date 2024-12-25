@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Meta-xi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5010a75b82b2206e5d49b08b96c84e6f4df06435")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+30c435b0a76000e5a70c4fe4055da2f0006fb06b")]
 [assembly: System.Reflection.AssemblyProductAttribute("Meta-xi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Meta-xi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
