@@ -16,7 +16,7 @@ public class WalletController : ControllerBase
     public async Task<IActionResult> UpdateBalance(UpdateBalance updateBalance)
     {
         GetMoneyValues getMoneyValues = new GetMoneyValues();
-        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == updateBalance.Email);
+        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == updateBalance.Email || option.PhoneNumber == updateBalance.Email);
         if(user == null){
             return NotFound(new { message = "No existe ninguna cuenta con ese correo" });
         }
