@@ -168,4 +168,19 @@ public class WalletController : ControllerBase
         };
         return Ok(getParameters);
     }
+    [HttpGet("ClaimWelcomeBonus/{username}")]
+    public async Task<IActionResult> ClaimWelcomeBonus(string username){
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == username || u.PhoneNumber == username);
+        if(user == null){
+            return NotFound(new { message = "Usuario no encontrado" });
+        }
+        var bonus = await context.WelcomeBonuss.FirstOrDefaultAsync(u => u.UserID == user.Id);
+        if(bonus == null){
+            return NotFound(new { message = "Bonus no encontrado" });
+        }
+        if(bonus.IsClaimed){
+            return NotFound(new { message = "Bonus ya ha sido reclamado" });
+        }
+        return Ok();
+    }
 }

@@ -65,7 +65,8 @@ public class UserController : ControllerBase
                 Wallet = null,
                 rechargeLogs = null,
                 withdrawLogs = null,
-                missionsUSers = null
+                missionsUSers = null,
+                WelcomeBonus = null
             };
             await context.Users.AddAsync(userToRegister);
             await context.SaveChangesAsync();
@@ -83,6 +84,7 @@ public class UserController : ControllerBase
             };
             await context.Wallets.AddAsync(wallet1);
             await context.SaveChangesAsync();
+            
         }
         else
         {
@@ -123,7 +125,8 @@ public class UserController : ControllerBase
                     Wallet = null,
                     rechargeLogs = null,
                     withdrawLogs = null,
-                    missionsUSers = null
+                    missionsUSers = null,
+                    WelcomeBonus = null
                 };
                 await context.Users.AddAsync(user);
                 await context.SaveChangesAsync();
@@ -158,7 +161,17 @@ public class UserController : ControllerBase
             }
             await registeredToReferLevel.VerifyToReferLevel1(userRegister.CodeReferrer, code);
         }
-
+        var user2 = await context.Users.FirstOrDefaultAsync(option => option.Email == userRegister.Email || option.PhoneNumber == userRegister.PhoneNumber);
+        if(user2 == null){
+            return BadRequest(new { message = "El usuario no existe" });
+        }
+        WelcomeBonus welcomeBonus = new WelcomeBonus{
+            IsClaimed = false,
+            UserID = user2.Id,
+            User = null
+        };
+        await context.WelcomeBonuss.AddAsync(welcomeBonus);
+        await context.SaveChangesAsync();
         return Ok(new { message = "Usuario registrado correctamente" });
     }
 
