@@ -29,7 +29,7 @@ public class WalletController : ControllerBase
         switch (token)
         {
             case "nequi":
-                wallet.Balance = updateBalance.Balance;
+                wallet.Balance += updateBalance.Balance;
                 context.Entry(wallet).State = EntityState.Modified;
                 await context.SaveChangesAsync();
                 RechargeLog rechargeLog = new RechargeLog{
