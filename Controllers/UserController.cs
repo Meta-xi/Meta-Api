@@ -25,6 +25,7 @@ public class UserController : ControllerBase
     {
         string code;
         bool isUnique;
+        int userID = 0;
         do
         {
             code = userRegister.GeneratedReferCode();
@@ -66,11 +67,13 @@ public class UserController : ControllerBase
                 rechargeLogs = null,
                 withdrawLogs = null,
                 missionsUSers = null,
-                WelcomeBonus = null
+                WelcomeBonus = null,
+                trendUsers = null
             };
             await context.Users.AddAsync(userToRegister);
             await context.SaveChangesAsync();
-
+            Console.WriteLine(userToRegister.Id);
+            userID = userToRegister.Id;
             var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == userRegister.Email);
             if (wallet != null)
             {
@@ -126,11 +129,13 @@ public class UserController : ControllerBase
                     rechargeLogs = null,
                     withdrawLogs = null,
                     missionsUSers = null,
-                    WelcomeBonus = null
+                    WelcomeBonus = null,
+                    trendUsers = null
                 };
                 await context.Users.AddAsync(user);
                 await context.SaveChangesAsync();
-
+                Console.WriteLine(user.Id);
+                userID = user.Id;
                 var wallet = await context.Wallets.FirstOrDefaultAsync(option => option.Email == userRegister.Email);
                 if (wallet != null)
                 {
@@ -161,13 +166,10 @@ public class UserController : ControllerBase
             }
             await registeredToReferLevel.VerifyToReferLevel1(userRegister.CodeReferrer, code);
         }
-        var user2 = await context.Users.FirstOrDefaultAsync(option => option.Email == userRegister.Email || option.PhoneNumber == userRegister.PhoneNumber);
-        if(user2 == null){
-            return BadRequest(new { message = "El usuario no existe" });
-        }
+        Console.WriteLine(userID);
         WelcomeBonus welcomeBonus = new WelcomeBonus{
             IsClaimed = false,
-            UserID = user2.Id,
+            UserID = userID,
             User = null
         };
         await context.WelcomeBonuss.AddAsync(welcomeBonus);

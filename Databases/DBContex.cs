@@ -20,7 +20,6 @@ public class DBContext : DbContext
     public required DbSet<WithdrawLog> WithdrawLogs { get ; set ; }
     public required DbSet<Missions> Missionss { get ; set ; }
     public required DbSet<MissionsUser> MissionsUsers { get ; set ; }
-    public required DbSet<Completed> Completeds { get ; set ; }
     public required DbSet<Trend> Trends { get ; set ; }
     public required DbSet<WelcomeBonus> WelcomeBonuss { get ; set ; }
 
@@ -35,6 +34,8 @@ public class DBContext : DbContext
         modelBuilder.Entity<MissionsUser>().HasOne(option => option.User).WithMany(option => option.missionsUSers).HasForeignKey(option => option.UserID);
         modelBuilder.Entity<MissionsUser>().HasOne(u => u.Missions).WithMany( u => u.MissionsUsers).HasForeignKey(u => u.IDMission);
         modelBuilder.Entity<WelcomeBonus>().HasOne(option => option.User).WithOne(option => option.WelcomeBonus).HasForeignKey<WelcomeBonus>(option => option.UserID);
+        modelBuilder.Entity<TrendUser>().HasOne(u => u.User).WithMany(u => u.trendUsers).HasForeignKey(u => u.IdUser);
+        modelBuilder.Entity<TrendUser>().HasOne(u => u.Trend).WithMany(u => u.TrendUsers).HasForeignKey(u => u.IDTrend);
     }
 
 }
