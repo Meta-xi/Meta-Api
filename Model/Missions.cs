@@ -7,6 +7,7 @@ public class Missions
     public int IDMission { get; set; }
     public required string Name { get; set; }
     public required float Reward { get; set; }
+    public required int Goal { get; set; }
     public required ICollection<MissionsUser>? MissionsUsers { get; set; }
 
 }

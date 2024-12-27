@@ -23,6 +23,7 @@ public class MisionsController : ControllerBase
         {
             Name = misionRegister.Name,
             Reward = misionRegister.Reward,
+            Goal = misionRegister.Goal,
             MissionsUsers = null
         };
         await context.Missionss.AddAsync(missions);

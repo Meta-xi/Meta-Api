@@ -136,5 +136,71 @@ public class UserPlansController : ControllerBase
             return Ok(benefit);
         }
     }
-
+    [HttpGet("GetVrsToUser/{username}")]
+    public async Task<IActionResult> GetVrsToUser(string username){
+        var user = await context.Users.FirstOrDefaultAsync(option => option.Email == username || option.PhoneNumber == username);
+        if(user == null){
+            return NotFound(new { message = "El usuario no existe en la aplicacion" });
+        }
+        var userVrs = await context.UserPlans.Where(option => option.Username == username).ToListAsync();
+        if(!userVrs.Any()){
+            return NotFound(new { message = "El usuario no tiene ningun plan" });
+        }
+        var plans = await context.Plans.ToListAsync();
+        List<string> vrs = new List<string>();
+        foreach( var i in userVrs){
+            foreach(var j in plans){
+                if(i.NamePlan == j.Name){
+                    vrs.Add("Vr"+j.IDPlan+",");
+                }
+            }
+        }
+        return Ok(vrs);
+    }
+    [HttpPost("AdminPlanToUser")]
+    public async Task<IActionResult> AdminPlanToUSer(AdminPlanToUser adminPlanToUser){
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == adminPlanToUser.Username || u.PhoneNumber == adminPlanToUser.Username);
+        if(user == null){
+            return NotFound(new { message = "El usuario no existe en la aplicacion" });
+        }
+        var plan = await context.Plans.FirstOrDefaultAsync(u => u.IDPlan == adminPlanToUser.Vr);
+        if(plan == null){
+            return NotFound(new { message = "El plan no existe en la aplicacion" });
+        }
+        var userPlans = await context.UserPlans.Where(u => u.Username == user.Email && u.NamePlan == plan.Name).ToListAsync();
+        if(userPlans.Count >= plan.MaxQuantity){
+            return BadRequest(new { message = "El usuario ya tiene el maximo de compras para este plan" });
+        }
+        UserPlans userPlans1 = new UserPlans{
+            Username = adminPlanToUser.Username,
+            NamePlan = plan.Name,
+            DatePlan = DateTime.UtcNow,
+            Percentage = 0
+        };
+        await context.AddAsync(userPlans1);
+        await context.SaveChangesAsync();
+        return Ok(new { message = "Plan comprado con exito" });
+    }
+    [HttpDelete("DeleteUserPlans")]
+    public async Task<IActionResult> DeleteUserPlans(AdminPlanToUserDelete adminPlanToUserDelete){
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == adminPlanToUserDelete.Username || u.PhoneNumber == adminPlanToUserDelete.Username);
+        if(user == null){
+            return NotFound(new { message = "El usuario no existe en la aplicacion" });
+        }
+        var plan = await context.Plans.FirstOrDefaultAsync(u => u.IDPlan == adminPlanToUserDelete.Vr);
+        if(plan == null){
+            return NotFound(new { message = "El plan no existe en la aplicacion" });
+        }
+        var userPlans = await context.UserPlans.Where(u => u.Username == adminPlanToUserDelete.Username && u.NamePlan == plan.Name).ToListAsync();
+        if(userPlans.Count < adminPlanToUserDelete.Quantity){
+            return BadRequest(new { message = "El usuario no tiene esa cantidad de compras de este plan" });
+        }
+        var plansdelete = userPlans.Take(adminPlanToUserDelete.Quantity);
+        context.UserPlans.RemoveRange(plansdelete);
+        await context.SaveChangesAsync();
+        if(adminPlanToUserDelete.Quantity == 1){
+            return Ok(new { message = "Plan eliminado con exito" });
+        }
+        return Ok(new { message = "Planes eliminados con exito" });
+    }
 }

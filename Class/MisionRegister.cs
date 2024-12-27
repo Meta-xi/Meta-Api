@@ -3,4 +3,5 @@ public class MisionRegister
 {
     public required string Name { get; set; }
     public required float Reward { get ; set; }
+    public required int Goal { get; set; }
 }
