@@ -3,6 +3,7 @@ using System;
 using Meta_xi.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Meta_xi.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContexModelSnapshot : ModelSnapshot
+    [Migration("20241227235404_ModifyTableMissionUser")]
+    partial class ModifyTableMissionUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,53 +49,6 @@ namespace Meta_xi.Migrations
                     b.HasKey("IdGanancias");
 
                     b.ToTable("BenefitPerRefers");
-                });
-
-            modelBuilder.Entity("Meta_xi.Application.DisponibilityToClaim", b =>
-                {
-                    b.Property<int>("IDDisponibility")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IDDisponibility"));
-
-                    b.Property<float>("Disponibility")
-                        .HasColumnType("real");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("integer");
-
-                    b.HasKey("IDDisponibility");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("DisponibilityToClaims");
-                });
-
-            modelBuilder.Entity("Meta_xi.Application.IsClaimed", b =>
-                {
-                    b.Property<int>("IDClaimed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IDClaimed"));
-
-                    b.Property<DateTime>("DateClaimed")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("IDMission")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("integer");
-
-                    b.HasKey("IDClaimed");
-
-                    b.HasIndex("IDMission");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("IsClaimeds");
                 });
 
             modelBuilder.Entity("Meta_xi.Application.Missions", b =>
@@ -286,9 +242,6 @@ namespace Meta_xi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdTendency"));
 
-                    b.Property<int>("Goal")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -309,6 +262,9 @@ namespace Meta_xi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdTrendUser"));
 
+                    b.Property<int>("Goal")
+                        .HasColumnType("integer");
+
                     b.Property<int>("IDTrend")
                         .HasColumnType("integer");
 
@@ -318,13 +274,16 @@ namespace Meta_xi.Migrations
                     b.Property<bool>("IsClaimed")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("Progres")
+                        .HasColumnType("integer");
+
                     b.HasKey("IdTrendUser");
 
                     b.HasIndex("IDTrend");
 
                     b.HasIndex("IdUser");
 
-                    b.ToTable("TrendsUsers");
+                    b.ToTable("TrendUser");
                 });
 
             modelBuilder.Entity("Meta_xi.Application.UpdatePlansForUser", b =>
@@ -482,36 +441,6 @@ namespace Meta_xi.Migrations
                     b.ToTable("WithdrawLogs");
                 });
 
-            modelBuilder.Entity("Meta_xi.Application.DisponibilityToClaim", b =>
-                {
-                    b.HasOne("Meta_xi.Application.User", "User")
-                        .WithMany("DisponibilityToClaims")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Meta_xi.Application.IsClaimed", b =>
-                {
-                    b.HasOne("Meta_xi.Application.Missions", "Missions")
-                        .WithMany("IsClaimeds")
-                        .HasForeignKey("IDMission")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Meta_xi.Application.User", "User")
-                        .WithMany("IsClaimeds")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Missions");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Meta_xi.Application.MissionsUser", b =>
                 {
                     b.HasOne("Meta_xi.Application.Missions", "Missions")
@@ -627,8 +556,6 @@ namespace Meta_xi.Migrations
 
             modelBuilder.Entity("Meta_xi.Application.Missions", b =>
                 {
-                    b.Navigation("IsClaimeds");
-
                     b.Navigation("MissionsUsers");
                 });
 
@@ -639,10 +566,6 @@ namespace Meta_xi.Migrations
 
             modelBuilder.Entity("Meta_xi.Application.User", b =>
                 {
-                    b.Navigation("DisponibilityToClaims");
-
-                    b.Navigation("IsClaimeds");
-
                     b.Navigation("WelcomeBonus");
 
                     b.Navigation("missionsUSers");

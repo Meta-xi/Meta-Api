@@ -9,5 +9,6 @@ public class Missions
     public required float Reward { get; set; }
     public required int Goal { get; set; }
     public required ICollection<MissionsUser>? MissionsUsers { get; set; }
+    public required ICollection<IsClaimed>? IsClaimeds { get; set; }
 
 }

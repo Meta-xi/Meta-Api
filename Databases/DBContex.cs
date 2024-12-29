@@ -21,7 +21,10 @@ public class DBContext : DbContext
     public required DbSet<Missions> Missionss { get ; set ; }
     public required DbSet<MissionsUser> MissionsUsers { get ; set ; }
     public required DbSet<Trend> Trends { get ; set ; }
+    public required DbSet<TrendUser> TrendsUsers { get ; set ; }
     public required DbSet<WelcomeBonus> WelcomeBonuss { get ; set ; }
+    public required DbSet<DisponibilityToClaim> DisponibilityToClaims { get ; set ; }
+    public required DbSet<IsClaimed> IsClaimeds { get ; set ; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,6 +39,9 @@ public class DBContext : DbContext
         modelBuilder.Entity<WelcomeBonus>().HasOne(option => option.User).WithOne(option => option.WelcomeBonus).HasForeignKey<WelcomeBonus>(option => option.UserID);
         modelBuilder.Entity<TrendUser>().HasOne(u => u.User).WithMany(u => u.trendUsers).HasForeignKey(u => u.IdUser);
         modelBuilder.Entity<TrendUser>().HasOne(u => u.Trend).WithMany(u => u.TrendUsers).HasForeignKey(u => u.IDTrend);
+        modelBuilder.Entity<DisponibilityToClaim>().HasOne(u => u.User).WithMany(u => u.DisponibilityToClaims).HasForeignKey(u => u.UserID);
+        modelBuilder.Entity<IsClaimed>().HasOne(u => u.User).WithMany(u => u.IsClaimeds).HasForeignKey(u => u.UserID);
+        modelBuilder.Entity<IsClaimed>().HasOne(u => u.Missions).WithMany(u => u.IsClaimeds).HasForeignKey(u => u.IDMission);
     }
 
 }

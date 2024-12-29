@@ -68,7 +68,9 @@ public class UserController : ControllerBase
                 withdrawLogs = null,
                 missionsUSers = null,
                 WelcomeBonus = null,
-                trendUsers = null
+                trendUsers = null,
+                DisponibilityToClaims = null,
+                IsClaimeds = null
             };
             await context.Users.AddAsync(userToRegister);
             await context.SaveChangesAsync();
@@ -130,7 +132,9 @@ public class UserController : ControllerBase
                     withdrawLogs = null,
                     missionsUSers = null,
                     WelcomeBonus = null,
-                    trendUsers = null
+                    trendUsers = null,
+                    DisponibilityToClaims = null,
+                    IsClaimeds = null
                 };
                 await context.Users.AddAsync(user);
                 await context.SaveChangesAsync();

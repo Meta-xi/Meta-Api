@@ -7,5 +7,6 @@ public class Trend
     public int IdTendency { get; set; }
     public required string Name { get; set; }
     public required float Reward { get; set; }
+    public required int Goal { get; set; }
     public required ICollection<TrendUser>? TrendUsers { get; set; }
 }

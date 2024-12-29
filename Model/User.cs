@@ -20,5 +20,7 @@ public class User
     public required ICollection<MissionsUser>? missionsUSers { get ; set; }
     public required ICollection<TrendUser>? trendUsers { get ; set ; }
     public required WelcomeBonus? WelcomeBonus { get; set; }
+    public required ICollection<DisponibilityToClaim>? DisponibilityToClaims { get; set; }
+    public required ICollection<IsClaimed>? IsClaimeds { get; set; }
     
 }

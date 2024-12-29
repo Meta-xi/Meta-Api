@@ -14,7 +14,7 @@ public class MisionsController : ControllerBase
     [HttpPost("MisionRegister")]
     public async Task<IActionResult> MisionRegister(MisionRegister misionRegister)
     {
-        var name = context.Missionss.FirstOrDefault(u => u.Name == misionRegister.Name);
+        var name = await context.Missionss.FirstOrDefaultAsync(u => u.Name == misionRegister.Name);
         if (name != null)
         {
             return BadRequest("La mision ya existe en la aplicacion");
@@ -24,7 +24,8 @@ public class MisionsController : ControllerBase
             Name = misionRegister.Name,
             Reward = misionRegister.Reward,
             Goal = misionRegister.Goal,
-            MissionsUsers = null
+            MissionsUsers = null,
+            IsClaimeds = null
         };
         await context.Missionss.AddAsync(missions);
         await context.SaveChangesAsync();
@@ -32,14 +33,15 @@ public class MisionsController : ControllerBase
     }
     [HttpPost("TrendRegister")]
     public async Task<IActionResult> TrendRegister(MisionRegister misionRegister){
-        var name = context.Missionss.FirstOrDefaultAsync(u => u.Name == misionRegister.Name);
+        var name = await context.Missionss.FirstOrDefaultAsync(u => u.Name == misionRegister.Name);
         if(name != null){
             return BadRequest("La mision ya existe en la aplicacion");
         }
         Trend trend = new Trend{
             Name = misionRegister.Name,
             Reward = misionRegister.Reward,
-            TrendUsers = null
+            TrendUsers = null,
+            Goal = misionRegister.Goal
         };
         await context.Trends.AddAsync(trend);
         await context.SaveChangesAsync();

@@ -7,8 +7,6 @@ public class TrendUser
     public int IdTrendUser { get; set; }
     public required int IDTrend { get; set; }
     public required int IdUser { get; set; }
-    public required int Progres { get; set; }
-    public required int Goal { get; set; }
     public required bool IsClaimed { get; set; }
     public required User? User { get; set; }
     public required Trend? Trend { get; set; }

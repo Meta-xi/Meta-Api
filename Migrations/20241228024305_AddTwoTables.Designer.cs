@@ -3,6 +3,7 @@ using System;
 using Meta_xi.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Meta_xi.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContexModelSnapshot : ModelSnapshot
+    [Migration("20241228024305_AddTwoTables")]
+    partial class AddTwoTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -286,9 +289,6 @@ namespace Meta_xi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdTendency"));
 
-                    b.Property<int>("Goal")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -309,6 +309,9 @@ namespace Meta_xi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdTrendUser"));
 
+                    b.Property<int>("Goal")
+                        .HasColumnType("integer");
+
                     b.Property<int>("IDTrend")
                         .HasColumnType("integer");
 
@@ -318,13 +321,16 @@ namespace Meta_xi.Migrations
                     b.Property<bool>("IsClaimed")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("Progres")
+                        .HasColumnType("integer");
+
                     b.HasKey("IdTrendUser");
 
                     b.HasIndex("IDTrend");
 
                     b.HasIndex("IdUser");
 
-                    b.ToTable("TrendsUsers");
+                    b.ToTable("TrendUser");
                 });
 
             modelBuilder.Entity("Meta_xi.Application.UpdatePlansForUser", b =>
