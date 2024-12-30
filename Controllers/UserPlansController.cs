@@ -8,7 +8,7 @@ public class UserPlansController : ControllerBase
 {
     private readonly DBContext context;
     private readonly IBenefitPerRefer benefitPerRefer;
-    public UserPlansController(DBContext dBContext , IBenefitPerRefer _benefitPerRefer)
+    public UserPlansController(DBContext dBContext, IBenefitPerRefer _benefitPerRefer)
     {
         context = dBContext;
         benefitPerRefer = _benefitPerRefer;
@@ -55,29 +55,39 @@ public class UserPlansController : ControllerBase
             Console.WriteLine(wallet.Balance);
             context.Entry(wallet).State = EntityState.Modified;
             await context.SaveChangesAsync();
-            BenefitOperation benefitOperation = new BenefitOperation{
+            BenefitOperation benefitOperation = new BenefitOperation
+            {
                 PricePlan = plan.Price,
                 Username = buyPlans.Username
             };
             bool result3 = await benefitPerRefer.RegisterBenefitLevel3(benefitOperation);
-            if(!result3){
+            if (!result3)
+            {
                 Console.WriteLine("No se actualizo para level3");
-            }else{
+            }
+            else
+            {
                 Console.WriteLine("Se actualizo para level3");
             }
             bool result2 = await benefitPerRefer.RegisterBenefitLevel2(benefitOperation);
-            if(!result2){
+            if (!result2)
+            {
                 Console.WriteLine("No se actualizo para level2");
-            }else{
+            }
+            else
+            {
                 Console.WriteLine("Se actualizo para level2");
             }
             bool result = await benefitPerRefer.RegisterBenefitLevel1(benefitOperation);
-            if(!result){
+            if (!result)
+            {
                 Console.WriteLine("No se actualizo para level1");
-            }else{
+            }
+            else
+            {
                 Console.WriteLine("Se actualizo para level3");
             }
-            
+
         }
         else
         {
@@ -123,55 +133,69 @@ public class UserPlansController : ControllerBase
                     myPlans.Add(myPlan);
                 }
             }
-
         }
-        return Ok(myPlans);
+        return Ok(userPlans);
     }
     [HttpGet("GetBalaceToUser/{username}")]
-    public async Task<IActionResult> GetBalanceToUser(string username){
+    public async Task<IActionResult> GetBalanceToUser(string username)
+    {
         var benefit = await context.UpdatePlansForUser.FirstOrDefaultAsync(option => option.Username == username);
-        if(benefit == null){
+        if (benefit == null)
+        {
             return NotFound(new { message = "El usuario no tiene ninguna información de beneficios" });
-        }else{
+        }
+        else
+        {
             return Ok(benefit);
         }
     }
     [HttpGet("GetVrsToUser/{username}")]
-    public async Task<IActionResult> GetVrsToUser(string username){
+    public async Task<IActionResult> GetVrsToUser(string username)
+    {
         var user = await context.Users.FirstOrDefaultAsync(option => option.Email == username || option.PhoneNumber == username);
-        if(user == null){
+        if (user == null)
+        {
             return NotFound(new { message = "El usuario no existe en la aplicacion" });
         }
         var userVrs = await context.UserPlans.Where(option => option.Username == username).ToListAsync();
-        if(!userVrs.Any()){
+        if (!userVrs.Any())
+        {
             return NotFound(new { message = "El usuario no tiene ningun plan" });
         }
         var plans = await context.Plans.ToListAsync();
         List<string> vrs = new List<string>();
-        foreach( var i in userVrs){
-            foreach(var j in plans){
-                if(i.NamePlan == j.Name){
-                    vrs.Add("Vr"+j.IDPlan+",");
+        foreach (var i in userVrs)
+        {
+            foreach (var j in plans)
+            {
+                if (i.NamePlan == j.Name)
+                {
+                    vrs.Add("Vr" + j.IDPlan + ",");
                 }
             }
         }
         return Ok(vrs);
     }
     [HttpPost("AdminPlanToUser")]
-    public async Task<IActionResult> AdminPlanToUSer(AdminPlanToUser adminPlanToUser){
+    public async Task<IActionResult> AdminPlanToUSer(AdminPlanToUser adminPlanToUser)
+    {
         var user = await context.Users.FirstOrDefaultAsync(u => u.Email == adminPlanToUser.Username || u.PhoneNumber == adminPlanToUser.Username);
-        if(user == null){
+        if (user == null)
+        {
             return NotFound(new { message = "El usuario no existe en la aplicacion" });
         }
         var plan = await context.Plans.FirstOrDefaultAsync(u => u.IDPlan == adminPlanToUser.Vr);
-        if(plan == null){
+        if (plan == null)
+        {
             return NotFound(new { message = "El plan no existe en la aplicacion" });
         }
         var userPlans = await context.UserPlans.Where(u => u.Username == user.Email && u.NamePlan == plan.Name).ToListAsync();
-        if(userPlans.Count >= plan.MaxQuantity){
+        if (userPlans.Count >= plan.MaxQuantity)
+        {
             return BadRequest(new { message = "El usuario ya tiene el maximo de compras para este plan" });
         }
-        UserPlans userPlans1 = new UserPlans{
+        UserPlans userPlans1 = new UserPlans
+        {
             Username = adminPlanToUser.Username,
             NamePlan = plan.Name,
             DatePlan = DateTime.UtcNow,
@@ -182,23 +206,28 @@ public class UserPlansController : ControllerBase
         return Ok(new { message = "Plan comprado con exito" });
     }
     [HttpDelete("DeleteUserPlans")]
-    public async Task<IActionResult> DeleteUserPlans(AdminPlanToUserDelete adminPlanToUserDelete){
+    public async Task<IActionResult> DeleteUserPlans(AdminPlanToUserDelete adminPlanToUserDelete)
+    {
         var user = await context.Users.FirstOrDefaultAsync(u => u.Email == adminPlanToUserDelete.Username || u.PhoneNumber == adminPlanToUserDelete.Username);
-        if(user == null){
+        if (user == null)
+        {
             return NotFound(new { message = "El usuario no existe en la aplicacion" });
         }
         var plan = await context.Plans.FirstOrDefaultAsync(u => u.IDPlan == adminPlanToUserDelete.Vr);
-        if(plan == null){
+        if (plan == null)
+        {
             return NotFound(new { message = "El plan no existe en la aplicacion" });
         }
         var userPlans = await context.UserPlans.Where(u => u.Username == adminPlanToUserDelete.Username && u.NamePlan == plan.Name).ToListAsync();
-        if(userPlans.Count < adminPlanToUserDelete.Quantity){
+        if (userPlans.Count < adminPlanToUserDelete.Quantity)
+        {
             return BadRequest(new { message = "El usuario no tiene esa cantidad de compras de este plan" });
         }
         var plansdelete = userPlans.Take(adminPlanToUserDelete.Quantity);
         context.UserPlans.RemoveRange(plansdelete);
         await context.SaveChangesAsync();
-        if(adminPlanToUserDelete.Quantity == 1){
+        if (adminPlanToUserDelete.Quantity == 1)
+        {
             return Ok(new { message = "Plan eliminado con exito" });
         }
         return Ok(new { message = "Planes eliminados con exito" });
